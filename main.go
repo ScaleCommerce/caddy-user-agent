@@ -12,6 +12,8 @@ import (
 
 func init() {
 	caddy.RegisterModule(UserAgentParse{})
+	// Log that the module was registered
+	caddy.Log().Named("user_agent_parse").Info("User Agent Parse module has been registered")
 }
 
 type UserAgentParse struct {
@@ -29,12 +31,23 @@ func (UserAgentParse) CaddyModule() caddy.ModuleInfo {
 func (l *UserAgentParse) Provision(ctx caddy.Context) error {
 	l.logger = ctx.Logger(l)
 
+	// Log that the module was successfully provisioned
+	l.logger.Info("User Agent Parse module has been successfully loaded and provisioned",
+		zap.String("module_id", "http.handlers.user_agent_parse"))
+
 	return nil
 }
 
 func (m *UserAgentParse) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	agent := r.Header.Get("User-Agent")
 	ua := ua.Parse(agent)
+
+	// Optional: Debug logging for each request (can be disabled for high traffic)
+	m.logger.Debug("User Agent has been parsed",
+		zap.String("user_agent", agent),
+		zap.String("browser", ua.Name),
+		zap.String("version", ua.Version),
+		zap.String("os", ua.OS))
 
 	repl := r.Context().Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
 	repl.Set("user_agent.name", ua.Name)
