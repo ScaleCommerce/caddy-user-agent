@@ -61,27 +61,27 @@ func (m *UserAgentParse) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
 	agent := r.Header.Get("User-Agent")
 	ua := ua.Parse(agent)
 
-	// Determine device type
-	var deviceType string
-	if ua.Mobile {
-		deviceType = "mobile"
+	// Determine type: bot has priority over device type
+	var userAgentType string
+	if ua.Bot {
+		userAgentType = "bot"
+	} else if ua.Mobile {
+		userAgentType = "mobile"
 	} else if ua.Tablet {
-		deviceType = "tablet"
+		userAgentType = "tablet"
 	} else {
-		deviceType = "desktop"
+		userAgentType = "desktop"
 	}
 
 	// Optional: Debug logging for each request (can be disabled for high traffic)
 	m.logger.Debug("User Agent has been parsed",
 		zap.String("user_agent", agent),
-		zap.Bool("is_bot", ua.Bot),
-		zap.String("device_type", deviceType))
+		zap.String("type", userAgentType))
 
 	repl := r.Context().Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
 
-	// Set only the two required variables
-	repl.Set("user_agent.is_bot", ua.Bot)
-	repl.Set("user_agent.device_type", deviceType)
+	// Set single variable with type
+	repl.Set("user_agent.type", userAgentType)
 
 	return next.ServeHTTP(w, r)
 }

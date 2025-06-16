@@ -3,9 +3,10 @@ UserAgent Parser
 
 This Caddy Module allows to parse the user agent and provides essential device and bot detection.
 
-You can access the information via these placeholders:
-- `{user_agent.is_bot}` - Boolean indicating if the request is from a bot (true/false)
-- `{user_agent.device_type}` - Device type string (mobile/tablet/desktop)
+You can access the information via this placeholder:
+- `{user_agent.type}` - Type string with possible values: `bot`, `mobile`, `tablet`, `desktop`
+
+Priority: Bot detection has priority over device type. If a bot is detected, the type will be `bot` regardless of the device.
 
 The module uses the parser from [here](https://github.com/mileusna/useragent).
 
