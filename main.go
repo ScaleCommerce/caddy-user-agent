@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"go.uber.org/zap"
 
@@ -12,6 +13,8 @@ import (
 
 func init() {
 	caddy.RegisterModule(UserAgentParse{})
+	// Register the Caddyfile directive
+	httpcaddyfile.RegisterHandlerDirective("user_agent_parse", parseCaddyfile)
 	// Log that the module was registered
 	caddy.Log().Named("user_agent_parse").Info("User Agent Parse module has been registered")
 }
@@ -26,6 +29,21 @@ func (UserAgentParse) CaddyModule() caddy.ModuleInfo {
 		ID:  "http.handlers.user_agent_parse",
 		New: func() caddy.Module { return new(UserAgentParse) },
 	}
+}
+
+// parseCaddyfile parses the user_agent_parse directive.
+func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
+	var m UserAgentParse
+
+	// Parse any additional configuration if needed
+	// For now, we don't expect any arguments
+	for h.Next() {
+		if h.NextArg() {
+			return nil, h.ArgErr()
+		}
+	}
+
+	return &m, nil
 }
 
 func (l *UserAgentParse) Provision(ctx caddy.Context) error {
@@ -66,6 +84,7 @@ func (m *UserAgentParse) ServeHTTP(w http.ResponseWriter, r *http.Request, next 
 
 // Interface guards.
 var (
-	_ caddy.Provisioner = (*UserAgentParse)(nil)
-	_ caddy.Module      = (*UserAgentParse)(nil)
+	_ caddy.Provisioner           = (*UserAgentParse)(nil)
+	_ caddy.Module                = (*UserAgentParse)(nil)
+	_ caddyhttp.MiddlewareHandler = (*UserAgentParse)(nil)
 )
