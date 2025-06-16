@@ -13,7 +13,8 @@ import (
 
 func init() {
 	caddy.RegisterModule(UserAgentParse{})
-	// Register the Caddyfile directive
+	// Register the Caddyfile directive with order
+	httpcaddyfile.RegisterDirectiveOrder("user_agent_parse", httpcaddyfile.Before, "basicauth")
 	httpcaddyfile.RegisterHandlerDirective("user_agent_parse", parseCaddyfile)
 	// Log that the module was registered
 	caddy.Log().Named("user_agent_parse").Info("User Agent Parse module has been registered")
