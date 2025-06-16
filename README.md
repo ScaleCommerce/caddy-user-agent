@@ -1,21 +1,13 @@
 UserAgent Parser
 ===============================================
 
-This Caddy Module allows to parse the user agent and splits it into it's components.
+This Caddy Module allows to parse the user agent and provides essential device and bot detection.
 
-You can access the components via these placeholders:
-- `{user_agent.name}`
-- `{user_agent.version}`
-- `{user_agent.os}`
-- `{user_agent.os_version}`
-- `{user_agent.device}`
-- `{user_agent.mobile}`
-- `{user_agent.tablet}`
-- `{user_agent.desktop}`
-- `{user_agent.bot}`
-- `{user_agent.url}`
+You can access the information via these placeholders:
+- `{user_agent.is_bot}` - Boolean indicating if the request is from a bot (true/false)
+- `{user_agent.device_type}` - Device type string (mobile/tablet/desktop)
 
-The module is uses the parser from [here](https://github.com/mileusna/useragent).
+The module uses the parser from [here](https://github.com/mileusna/useragent).
 
 ## Install
 
